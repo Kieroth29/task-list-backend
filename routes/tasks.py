@@ -37,6 +37,11 @@ def delete_task():
 	if not validator.user_exists_by_id(user_id):
 		return Response(status=404, response=json.dumps({'message': 'User not found'}), mimetype='application/json')
 
+	task = db.get_task(task_id)
+
+	if not task:
+		return Response(status=404, response=json.dumps({'message': 'Task not found'}), mimetype='application/json')
+	
 	if not validator.task_belongs_to_user(task_id, user_id):
 		return Response(status=403, response=json.dumps({'message': 'Task not assigned to user'}), mimetype='application/json')
 
@@ -60,8 +65,13 @@ def update_task():
 	if not description:
 		return Response(status=422, response=json.dumps({'message': 'Description missing on request payload'}), mimetype='application/json')
 
-	if not validator.user_exists_by_id(user_id):
-		return Response(status=404, response=json.dumps({'message': 'User not found'}), mimetype='application/json')
+	task = db.get_task(task_id)
+
+	if not task:
+		return Response(status=404, response=json.dumps({'message': 'Task not found'}), mimetype='application/json')
+	
+	if not validator.task_belongs_to_user(task_id, user_id):
+		return Response(status=403, response=json.dumps({'message': 'Task not assigned to user'}), mimetype='application/json')
 
 	if not validator.task_belongs_to_user(task_id, user_id):
 		return Response(status=403, response=json.dumps({'message': 'Task not assigned to user'}), mimetype='application/json')
@@ -85,13 +95,13 @@ def get_task():
 	if not validator.user_exists_by_id(user_id):
 		return Response(status=404, response=json.dumps({'message': 'User not found'}), mimetype='application/json')
 
-	if not validator.task_belongs_to_user(task_id, user_id):
-		return Response(status=403, response=json.dumps({'message': 'Task not assigned to user'}), mimetype='application/json')
-
-	task = db.get_task(user_id, task_id)
+	task = db.get_task(task_id)
 
 	if not task:
 		return Response(status=404, response=json.dumps({'message': 'Task not found'}), mimetype='application/json')
+	
+	if not validator.task_belongs_to_user(task_id, user_id):
+		return Response(status=403, response=json.dumps({'message': 'Task not assigned to user'}), mimetype='application/json')
 
 	return Response(status=200, response=json.dumps({'id': task[0], 'description': task[1]}), mimetype='application/json')
 

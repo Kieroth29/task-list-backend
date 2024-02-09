@@ -40,8 +40,8 @@ class DB():
 		self.conn.commit()
 
 	
-	def get_task(self, task_id: int, user_id: int):
-		self.cursor.execute("SELECT id, description FROM tasks WHERE id = %s AND user_id = %s;", (task_id, user_id))
+	def get_task(self, task_id: int):
+		self.cursor.execute("SELECT * FROM tasks WHERE id = %s;", (task_id))
 		task = self.cursor.fetchone()
 
 		return task

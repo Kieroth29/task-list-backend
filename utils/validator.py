@@ -24,5 +24,6 @@ class Validator():
 		return False
 	
 
-	def task_belongs_to_user(self, task_id: int, user_id: int):
-		return bool(self.db.get_task(task_id, user_id))
+	def task_belongs_to_user(self, task_id: int, user_id: int) -> bool:
+		task = self.db.get_task(task_id)
+		return task[2] == user_id
