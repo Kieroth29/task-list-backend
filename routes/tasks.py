@@ -12,7 +12,7 @@ validator = Validator()
 
 @tasks.route('/create_task', methods=['POST'])
 def create_task():
-	user_id = request.json.get('user_id')
+	user_id = request.json.get('userId')
 	description = request.json.get('description')
 
 	if not validator.user_exists_by_id(user_id):
@@ -25,8 +25,8 @@ def create_task():
 
 @tasks.route('/delete_task', methods=['DELETE'])
 def delete_task():
-	task_id = request.json.get('task_id')
-	user_id = request.json.get('user_id')
+	task_id = request.json.get('taskId')
+	user_id = request.json.get('userId')
 
 	if not user_id:
 		return Response(status=422, response=json.dumps({'message': 'User ID missing on request payload'}), mimetype='application/json')
@@ -52,8 +52,8 @@ def delete_task():
 
 @tasks.route('/update_task', methods=['PATCH'])
 def update_task():
-	task_id = request.json.get('task_id')
-	user_id = request.json.get('user_id')
+	task_id = request.json.get('taskId')
+	user_id = request.json.get('userId')
 	description = request.json.get('description')
 
 	if not user_id:
@@ -83,8 +83,8 @@ def update_task():
 
 @tasks.route('/get_task', methods=['GET'])
 def get_task():
-	user_id = request.args.get('user_id')
-	task_id = request.args.get('task_id')
+	user_id = request.args.get('userId')
+	task_id = request.args.get('taskId')
 
 	if not user_id:
 		return Response(status=422, response=json.dumps({'message': 'User ID missing on request payload'}), mimetype='application/json')
@@ -108,7 +108,7 @@ def get_task():
 
 @tasks.route('/get_tasks', methods=['GET'])
 def get_tasks():
-	user_id = request.args.get('user_id')
+	user_id = request.args.get('userId')
 
 	if not user_id:
 		return Response(status=422, response=json.dumps({'message': 'User ID missing on request payload'}), mimetype='application/json')

@@ -33,7 +33,7 @@ def login():
 	if not check_password_hash(user[1], password):
 		return Response(status=403, response=json.dumps({'message': 'Invalid password.'}), mimetype='application/json')
 
-	return Response(status=200, response=json.dumps({'user_id': user[0], 'username': username}), mimetype='application/json')
+	return Response(status=200, response=json.dumps({'userId': user[0], 'username': username}), mimetype='application/json')
 
 
 @users.route('/register', methods=['POST'])
@@ -47,4 +47,4 @@ def register():
 
 	user_id = db.register(username, hashed_password)
 
-	return Response(status=200, response=json.dumps({'user_id': user_id}), mimetype='application/json')
+	return Response(status=200, response=json.dumps({'userId': user_id}), mimetype='application/json')
