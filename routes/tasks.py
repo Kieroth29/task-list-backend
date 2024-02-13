@@ -5,12 +5,12 @@ from flask import Blueprint, request, Response
 from modules.db import DB
 from utils.validator import Validator
 
-tasks = Blueprint('tasks', __name__)
+tasks = Blueprint('tasks', __name__, url_prefix='/tasks')
 db = DB()
 validator = Validator()
 
 
-@tasks.route('/create_task', methods=['POST'])
+@tasks.route('/', methods=['POST'])
 def create_task():
 	user_id = request.json.get('userId')
 	description = request.json.get('description')
@@ -18,12 +18,12 @@ def create_task():
 	if not validator.user_exists_by_id(user_id):
 		return Response(status=404, response=json.dumps({'message': 'User not found.'}), mimetype='application/json')
 
-	db.create_task(description, user_id)
+	task_id = db.create_task(description, user_id)
 
-	return Response(status=200)
+	return Response(status=200, response=json.dumps({'taskId': task_id}), mimetype='application/json')
 
 
-@tasks.route('/delete_task', methods=['DELETE'])
+@tasks.route('/', methods=['DELETE'])
 def delete_task():
 	task_id = request.json.get('taskId')
 	user_id = request.json.get('userId')
@@ -50,7 +50,7 @@ def delete_task():
 	return Response(status=200)
 
 
-@tasks.route('/update_task', methods=['PATCH'])
+@tasks.route('/', methods=['PATCH'])
 def update_task():
 	task_id = request.json.get('taskId')
 	user_id = request.json.get('userId')
@@ -73,18 +73,15 @@ def update_task():
 	if not validator.task_belongs_to_user(task_id, user_id):
 		return Response(status=403, response=json.dumps({'message': 'Task not assigned to user'}), mimetype='application/json')
 
-	if not validator.task_belongs_to_user(task_id, user_id):
-		return Response(status=403, response=json.dumps({'message': 'Task not assigned to user'}), mimetype='application/json')
-
 	db.update_task(description, task_id)
 
 	return Response(status=200)
 
 
-@tasks.route('/get_task', methods=['GET'])
+@tasks.route('/', methods=['GET'])
 def get_task():
-	user_id = request.args.get('userId')
-	task_id = request.args.get('taskId')
+	user_id = int(request.args.get('userId'))
+	task_id = int(request.args.get('taskId'))
 
 	if not user_id:
 		return Response(status=422, response=json.dumps({'message': 'User ID missing on request payload'}), mimetype='application/json')
@@ -106,14 +103,12 @@ def get_task():
 	return Response(status=200, response=json.dumps({'id': task[0], 'description': task[1]}), mimetype='application/json')
 
 
-@tasks.route('/get_tasks', methods=['GET'])
-def get_tasks():
-	user_id = request.args.get('userId')
-
+@tasks.route('/<user_id>', methods=['GET'])
+def get_tasks(user_id):
 	if not user_id:
 		return Response(status=422, response=json.dumps({'message': 'User ID missing on request payload'}), mimetype='application/json')
 
-	if not validator.user_exists_by_id(user_id):
+	if not validator.user_exists_by_id(int(user_id)):
 		return Response(status=404, response=json.dumps({'message': 'User not found'}), mimetype='application/json')
 
 	tasks = db.get_tasks(user_id)

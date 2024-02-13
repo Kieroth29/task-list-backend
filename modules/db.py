@@ -15,14 +15,14 @@ class DB():
 
 	
 	def register(self, username: str, password: str) -> int:
-		self.cursor.execute('INSERT INTO users(username, password) VALUES (%s, %s) RETURNING id;', (username, password))
+		self.cursor.execute("INSERT INTO users(username, password) VALUES (%s, %s) RETURNING id;", (username, password))
 		self.conn.commit()
 
 		return self.cursor.fetchone()[0]
 
 
 	def get_user_by_username(self, username: str):
-		self.cursor.execute('SELECT id, password FROM users WHERE username = %s;', (username,))
+		self.cursor.execute("SELECT id, password FROM users WHERE username = %s;", (username,))
 		user = self.cursor.fetchone()
 
 		return user
@@ -36,19 +36,21 @@ class DB():
 
 
 	def create_task(self, description: str, user_id: int):
-		self.cursor.execute("INSERT INTO tasks(description, user_id) VALUES (%s, %s)", (description, user_id))
+		self.cursor.execute("INSERT INTO tasks(description, user_id) VALUES (%s, %s) RETURNING id;", (description, user_id))
 		self.conn.commit()
+
+		return self.cursor.fetchone()[0]
 
 	
 	def get_task(self, task_id: int):
-		self.cursor.execute("SELECT * FROM tasks WHERE id = %s;", (task_id))
+		self.cursor.execute("SELECT * FROM tasks WHERE id = %s;", (task_id,))
 		task = self.cursor.fetchone()
 
 		return task
 	
 
 	def get_tasks(self, user_id: int):
-		self.cursor.execute("SELECT id, description FROM tasks WHERE user_id = %s;", (user_id))
+		self.cursor.execute("SELECT id, description FROM tasks WHERE user_id = %s;", (user_id,))
 		tasks = self.cursor.fetchall()
 
 		return tasks
